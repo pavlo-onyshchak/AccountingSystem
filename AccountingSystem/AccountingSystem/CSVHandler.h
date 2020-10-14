@@ -14,7 +14,7 @@ public:
 	            std::function<T(std::string)> convertToOutputFormat);
 	 int Add(const T data) override;
 	 int Delete(const int id) override;
-	 int Update(const int id, const T value) override;
+	 int Update(const int id, const T& value) override;
 	 T Get(const int id) override;
      T GetLastRecord() override;
      int TableSize() override;
@@ -76,7 +76,7 @@ inline int CSVHandler<T>::Delete(const int id)
 }
 
 template<class T>
-inline int CSVHandler<T>::Update(const int id, const T val)
+inline int CSVHandler<T>::Update(const int id, const T& val)
 {
     /*if (isPresnt(id))
     {
@@ -91,11 +91,11 @@ inline T CSVHandler<T>::Get(const int id)
 {
     if (!std::experimental::filesystem::exists(_pathToFile))
     {
-        throw "File doesnt exist";
+        throw std::exception("File doesnt exist");
     }
     else if (TableSize() <= 1)
     {
-        throw "File is empty!";
+        throw std::exception("File is empty");
     }
     auto row = searchRow(id);
     return _toOutputFormat(row);
@@ -144,6 +144,10 @@ inline std::string CSVHandler<T>::searchRow(int id)
         }
     }
     file.close();
+    if (line.empty())
+    {
+        throw std::exception("Record with current ID doesnt exist");
+    }
     return line;
 }
 
@@ -156,7 +160,9 @@ inline T CSVHandler<T>::GetLastRecord()
     }
     std::ifstream file(_pathToFile);
     std::string lastLine;
-    while (file >> std::ws && std::getline(file, lastLine));
+    while (file >> std::ws && std::getline(file, lastLine))
+    {
+    }
     return _toOutputFormat(lastLine);
 }
 
@@ -168,7 +174,7 @@ inline int CSVHandler<T>::TableSize()
     auto count = 0;
     while (std::getline(file, line))
     {
-        count++;
+        ++count;
     }
     file.close();
     return count;

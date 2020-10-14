@@ -125,13 +125,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Fuel.cpp" />
     <ClCompile Include="GasStation.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CSVHandler.h" />
-    <ClInclude Include="Fuel.h" />
     <ClInclude Include="GasStation.h" />
     <ClInclude Include="IDataHandler.h" />
   </ItemGroup>

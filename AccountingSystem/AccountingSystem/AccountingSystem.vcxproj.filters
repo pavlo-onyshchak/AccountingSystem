@@ -18,17 +18,11 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Fuel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GasStation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Fuel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="IDataHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>

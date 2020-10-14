@@ -33,7 +33,7 @@ GasStation::GasStationData GasStation::GetRecord(int id)
     return _handler->Get(id);
 }
 
-std::string GasStation::GetCSVFormat(GasStationData data)
+std::string GasStation::GasStationData::GetCSVFormat(GasStationData data)
 {
 	std::stringstream ss;
 	const auto delim = ',';
@@ -46,7 +46,7 @@ std::string GasStation::GetCSVFormat(GasStationData data)
 	return ss.str();
 }
 
-GasStation::GasStationData GasStation::GetGasStationData(std::string line)
+GasStation::GasStationData GasStation::GasStationData::GetGasStationData(std::string line)
 {
 	GasStationData data;
     std::stringstream ss(line);

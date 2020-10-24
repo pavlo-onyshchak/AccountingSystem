@@ -10,8 +10,8 @@ template <class T>
 class CSVHandler : public IDataHandler<T>
 {
 public:
-	 CSVHandler(std::string pathToFile, std::vector<std::string> columnsName, std::function<std::string(T)> convertToInputFormat,
-	            std::function<T(std::string)> convertToOutputFormat);
+     static CSVHandler* GetHandler(std::string pathToFile, std::vector<std::string> columnsName,
+         std::function<std::string(T)> convertToInputFormat, std::function<T(std::string)> convertToOutputFormat);
 	 int Add(const T data) override;
 	 int Delete(const int id) override;
 	 int Update(const int id, const T& value) override;
@@ -19,7 +19,8 @@ public:
      T GetLastRecord() override;
      int TableSize() override;
 private:
-	void CreateFile(const std::string pathToFile);
+    CSVHandler(std::string pathToFile, std::vector<std::string> columnsName, std::function<std::string(T)> convertToInputFormat,
+        std::function<T(std::string)> convertToOutputFormat);
     void CreateTmpFile(const std::string pathToFile, std::vector<std::string> rows);
     std::string searchRow(int id);
 	std::function<std::string(T)> _toInputFormat;
@@ -35,12 +36,21 @@ CSVHandler<T>::CSVHandler(std::string pathToFile, std::vector<std::string> colum
     _toOutputFormat(convertToOutputFormat) {}
 
 template<class T>
+inline CSVHandler<T>* CSVHandler<T>::GetHandler(std::string pathToFile, std::vector<std::string> columnsName, std::function<std::string(T)> convertToInputFormat, std::function<T(std::string)> convertToOutputFormat)
+{
+    std::ofstream myFile(pathToFile);
+    const auto delim = ' ';
+    for (auto i = 0; i < columnsName.size(); ++i)
+    {
+        myFile << columnsName[i] << delim;
+    }
+    myFile << "\n";
+    return new CSVHandler(pathToFile,columnsName,convertToInputFormat,convertToOutputFormat);
+}
+
+template<class T>
 inline int CSVHandler<T>::Add(const T data)
 {
-     if (!std::experimental::filesystem::exists(_pathToFile))
-     {
-          CreateFile(_pathToFile);
-     }
      std::ofstream fout;
      fout.open(_pathToFile, std::ios_base::app);
      std::string result = _toInputFormat(data);
@@ -52,10 +62,6 @@ inline int CSVHandler<T>::Add(const T data)
 template<class T>
 inline int CSVHandler<T>::Delete(const int id)
 {
-     if (!std::experimental::filesystem::exists(_pathToFile))
-     {
-          return 0;
-     }
      std::ifstream file(_pathToFile);
      std::string line;
      std::vector<std::string> rows;
@@ -89,10 +95,6 @@ inline int CSVHandler<T>::Update(const int id, const T& val)
 template<class T>
 inline T CSVHandler<T>::Get(const int id)
 {
-    if (!std::experimental::filesystem::exists(_pathToFile))
-    {
-        throw std::exception("File doesnt exist");
-    }
     else if (TableSize() <= 1)
     {
         throw std::exception("File is empty");
@@ -101,25 +103,10 @@ inline T CSVHandler<T>::Get(const int id)
     return _toOutputFormat(row);
 }
 
-template<class T>
-inline void CSVHandler<T>::CreateFile(const std::string pathToFile)
-{
-    std::ofstream myFile(pathToFile);
-    const auto delim = ' ';
-    for (auto i = 0; i < _columnsName.size(); ++i)
-    {
-    	myFile << _columnsName[i] << delim;
-    }
-    myFile << "\n";
-}
 
 template<class T>
 inline void CSVHandler<T>::CreateTmpFile(const std::string pathToFile, std::vector<std::string> rows)
 {
-    if (!std::experimental::filesystem::exists(pathToFile))
-    {
-        CreateFile(pathToFile);
-    }
     std::ofstream fout;
     fout.open(pathToFile, std::ios_base::app);
     for (auto line : rows)

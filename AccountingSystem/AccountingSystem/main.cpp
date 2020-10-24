@@ -1,6 +1,5 @@
 #include <iostream>
 #include "cpp-httplib/httplib.h"
-#include "Fuel.h"
 #include "GasStation.h"
 #include "IDataHandler.h"
 #include "CSVHandler.h"
@@ -13,13 +12,13 @@
 int main(void) 
 {
 	std::vector<std::string> vec{ "ID","Name","Surname","Date","Liters","Ballance" };
-	std::function<std::string(GasStation::GasStationData)> func = GasStation::GetCSVFormat;
-	std::function<GasStation::GasStationData(std::string)> func1 = GasStation::GetGasStationData;
+	std::function<std::string(GasStation::GasStationData)> func = GasStation::GasStationData::GetCSVFormat;
+	std::function<GasStation::GasStationData(std::string)> func1 = GasStation::GasStationData::GetGasStationData;
 	auto handler = new CSVHandler<GasStation::GasStationData>("../GasStation.txt", vec, func, func1);
 	auto obj = new GasStation(handler);
 	obj->AddRecord({"ivan","ivanov",100});
     auto k = obj->GetRecord(3);
-    std::cout << obj->GetCSVFormat(k) << std::endl;
+    std::cout << GasStation::GasStationData::GetCSVFormat(k) << std::endl;
 
     //obj->DeleteRecord(5);
 

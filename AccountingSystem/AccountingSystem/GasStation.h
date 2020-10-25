@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <memory>
 #include "IDataHandler.h"
 
 class GasStation
@@ -25,14 +26,16 @@ public:
         int Liters;
     };
 
-	GasStation(IDataHandler<GasStationData>* _handler);
-	void AddRecord(InputData data, const bool IncreaseTheBallance = false);
+	GasStation(std::unique_ptr<IDataHandler<GasStationData>>  handler);
+	void AddRecord(InputData userData, const bool IncreaseTheBallance = false);
     int DeleteRecord(const int id);
+    int UpdateRecord(const int& id, const InputData& userData);
     GasStationData GetRecord(int id);
 
 private:
     int GenerateNextId();
     int GetCurrentBallance();
     std::string GetCurrentDate();
-	IDataHandler<GasStationData>* _handler;
+	//IDataHandler<GasStationData>* _handler;
+    std::unique_ptr<IDataHandler<GasStationData>> _handler;
 };

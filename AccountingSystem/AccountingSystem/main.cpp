@@ -14,11 +14,11 @@ int main(void)
 	std::vector<std::string> vec{ "ID","Name","Surname","Date","Liters","Ballance" };
 	std::function<std::string(GasStation::GasStationData)> func = GasStation::GasStationData::GetCSVFormat;
 	std::function<GasStation::GasStationData(std::string)> func1 = GasStation::GasStationData::GetGasStationData;
-	auto handler = new CSVHandler<GasStation::GasStationData>("../GasStation.txt", vec, func, func1);
+    auto handler = CSVHandler<GasStation::GasStationData>::GetHandler("../GasStation.txt", vec, func, func1);
 	auto obj = new GasStation(handler);
-	obj->AddRecord({"ivan","ivanov",100});
-    auto k = obj->GetRecord(3);
-    std::cout << GasStation::GasStationData::GetCSVFormat(k) << std::endl;
+	//obj->AddRecord({"ivan","ivanov",100});
+    //auto k = obj->GetRecord(3);
+    //std::cout << GasStation::GasStationData::GetCSVFormat(k) << std::endl;
 
     //obj->DeleteRecord(5);
 

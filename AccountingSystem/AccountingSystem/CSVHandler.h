@@ -4,13 +4,14 @@
 #include <vector>
 #include <cstdio>
 #include <experimental/filesystem>
+#include <memory>
 #include "IDataHandler.h"
 
 template <class T>
 class CSVHandler : public IDataHandler<T>
 {
 public:
-     static CSVHandler* GetHandler(std::string pathToFile, std::vector<std::string> columnsName,
+     static std::unique_ptr<CSVHandler<T>> CreateHandler(std::string pathToFile, std::vector<std::string> columnsName,
          std::function<std::string(T)> convertToInputFormat, std::function<T(std::string)> convertToOutputFormat);
 	 int Add(const T data) override;
 	 int Delete(const int id) override;
@@ -22,7 +23,8 @@ private:
     CSVHandler(std::string pathToFile, std::vector<std::string> columnsName, std::function<std::string(T)> convertToInputFormat,
         std::function<T(std::string)> convertToOutputFormat);
     void CreateTmpFile(const std::string pathToFile, std::vector<std::string> rows);
-    std::string searchRow(int id);
+    std::string GetRow(int id);
+    void InitFile();
 	std::function<std::string(T)> _toInputFormat;
 	std::function<T(std::string)> _toOutputFormat;
 	std::vector<std::string> _columnsName;
@@ -36,26 +38,24 @@ CSVHandler<T>::CSVHandler(std::string pathToFile, std::vector<std::string> colum
     _toOutputFormat(convertToOutputFormat) {}
 
 template<class T>
-inline CSVHandler<T>* CSVHandler<T>::GetHandler(std::string pathToFile, std::vector<std::string> columnsName, std::function<std::string(T)> convertToInputFormat, std::function<T(std::string)> convertToOutputFormat)
+inline std::unique_ptr<CSVHandler<T>> CSVHandler<T>::CreateHandler(std::string pathToFile, std::vector<std::string> columnsName,
+                       std::function<std::string(T)> convertToInputFormat, std::function<T(std::string)> convertToOutputFormat)
 {
-    std::ofstream myFile(pathToFile);
-    const auto delim = ' ';
-    for (auto i = 0; i < columnsName.size(); ++i)
+    std::unique_ptr<CSVHandler<T>> handler (new CSVHandler(pathToFile, columnsName, convertToInputFormat, convertToOutputFormat));
+    if (!std::experimental::filesystem::exists(pathToFile))
     {
-        myFile << columnsName[i] << delim;
+        handler->InitFile();
     }
-    myFile << "\n";
-    return new CSVHandler(pathToFile,columnsName,convertToInputFormat,convertToOutputFormat);
+    return handler;
 }
 
 template<class T>
 inline int CSVHandler<T>::Add(const T data)
 {
-     std::ofstream fout;
-     fout.open(_pathToFile, std::ios_base::app);
+     std::ofstream file;
+     file.open(_pathToFile, std::ios_base::app);
      std::string result = _toInputFormat(data);
-     fout << result << "\n";
-     fout.close();
+     file << result << "\n";
      return 0;
 }
 
@@ -84,22 +84,33 @@ inline int CSVHandler<T>::Delete(const int id)
 template<class T>
 inline int CSVHandler<T>::Update(const int id, const T& val)
 {
-    /*if (isPresnt(id))
+    std::ifstream file(_pathToFile);
+    const auto pathToTmpFile = std::string("../GasStationTmp.txt");
+    std::ofstream tmpFile(pathToTmpFile, std::ios_base::app);
+    std::string line;
+    std::getline(file, line); // to skip header line
+    while (std::getline(file, line))
     {
-         auto row = _convertFrom(val);
-         insert(id, row);
-    }*/
-    return 0;
+        if (id == T::GetID(line))
+        {
+            line = _toInputFormat(val);
+        }
+        tmpFile << line << "\n";
+    }
+    file.close();
+    remove(_pathToFile.c_str());
+    rename(pathToTmpFile.c_str(), _pathToFile.c_str());
+    return id;
 }
 
 template<class T>
 inline T CSVHandler<T>::Get(const int id)
 {
-    else if (TableSize() <= 1)
+    if (TableSize() <= 1)
     {
         throw std::exception("File is empty");
     }
-    auto row = searchRow(id);
+    auto row = GetRow(id);
     return _toOutputFormat(row);
 }
 
@@ -113,11 +124,10 @@ inline void CSVHandler<T>::CreateTmpFile(const std::string pathToFile, std::vect
     {
         fout << line << "\n";
     }
-    fout.close();
 }
 
 template<class T>
-inline std::string CSVHandler<T>::searchRow(int id)
+inline std::string CSVHandler<T>::GetRow(int id)
 {
     std::ifstream file(_pathToFile);
     std::string line;
@@ -127,15 +137,22 @@ inline std::string CSVHandler<T>::searchRow(int id)
     {
         if (id == T::GetID(line))
         {
-            break;
+            return line;
         }
     }
-    file.close();
-    if (line.empty())
+    throw std::exception("Record with current ID doesnt exist");
+}
+
+template<class T>
+inline void CSVHandler<T>::InitFile()
+{
+    std::ofstream file(_pathToFile);
+    const auto delim = ' ';
+    for (const auto& name : _columnsName)
     {
-        throw std::exception("Record with current ID doesnt exist");
+        file << name << delim;
     }
-    return line;
+    file << "\n";
 }
 
 template<class T>
@@ -166,4 +183,3 @@ inline int CSVHandler<T>::TableSize()
     file.close();
     return count;
 }
-

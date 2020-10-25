@@ -5,7 +5,7 @@
 #include <iomanip>
 #include "GasStation.h"
 
-GasStation::GasStation(IDataHandler<GasStationData>* handler):_handler(handler)
+GasStation::GasStation(std::unique_ptr<IDataHandler<GasStationData>> handler):_handler(std::move(handler))
 {
 }
 
@@ -25,6 +25,18 @@ void GasStation::AddRecord(InputData userData,const bool IncreaseTheBallance)
 int GasStation::DeleteRecord(const int id)
 {
     return _handler->Delete(id);
+}
+
+int GasStation::UpdateRecord(const int& id,const InputData& userData)
+{
+    GasStationData data;
+    data.Name = userData.Name;
+    data.Surname = userData.Surname;
+    data.Liters = userData.Liters;
+    data.ID = id;
+    data.Date = GetCurrentDate();
+    //data.Ballance = IncreaseTheBallance ? ballance + data.Liters : ballance - data.Liters;
+    return _handler->Update(id,data);
 }
 
 

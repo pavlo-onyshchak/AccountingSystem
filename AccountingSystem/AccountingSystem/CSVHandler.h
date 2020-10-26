@@ -63,21 +63,23 @@ template<class T>
 inline int CSVHandler<T>::Delete(const int id)
 {
      std::ifstream file(_pathToFile);
+     const auto pathToTmpFile = std::string("../GasStationTmp.txt");
+     std::ofstream tmpFile(pathToTmpFile, std::ios_base::app);
      std::string line;
-     std::vector<std::string> rows;
-     std::getline(file, line); // to skip header line
+     /*Copy header file*/
+     std::getline(file, line); 
+     tmpFile << line << "\n";
      while (std::getline(file, line))
      {
          if (id != T::GetID(line))
          {
-             rows.push_back(line);
+             tmpFile << line << "\n";
          }
      }
      file.close();
-     const std::string path = "../GasStationTmp.txt";
-     CreateTmpFile(path, rows);
      remove(_pathToFile.c_str());
-     rename(path.c_str(), _pathToFile.c_str());
+     tmpFile.close();
+     rename(pathToTmpFile.c_str(), _pathToFile.c_str());
      return id;
 }
 
@@ -88,7 +90,8 @@ inline int CSVHandler<T>::Update(const int id, const T& val)
     const auto pathToTmpFile = std::string("../GasStationTmp.txt");
     std::ofstream tmpFile(pathToTmpFile, std::ios_base::app);
     std::string line;
-    std::getline(file, line); // to skip header line
+    /*To skeep header line*/
+    std::getline(file, line); 
     while (std::getline(file, line))
     {
         if (id == T::GetID(line))

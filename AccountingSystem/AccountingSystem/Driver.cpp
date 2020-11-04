@@ -7,7 +7,7 @@ Driver::Driver(std::unique_ptr<IDataHandler<Data>> handler) : _handler(std::move
 
 void Driver::Add(UserInputData userData)
 {
-    auto data = InitData(GenerateNextId(), userData);
+    auto data = InitData(GenerateNextID(), userData); 
     _handler->Add(data);
 }
 
@@ -18,7 +18,7 @@ int Driver::Delete(const int& id)
 
 int Driver::Update(const int& id, const UserInputData& userData)
 {
-    auto data = InitData(id, userData);
+    auto data = InitData(id,userData);
     return _handler->Update(id,data);
 }
 
@@ -27,7 +27,7 @@ Driver::Data Driver::Get(int id)
     return _handler->Get(id);
 }
 
-int Driver::GenerateNextId()
+int Driver::GenerateNextID()
 {
     return _handler->TableSize() <= 1 ? 1 : _handler->GetLastRecord().ID + 1;
 }
@@ -49,7 +49,7 @@ int Driver::Data::GetID(std::string line)
      return stoi(id);
 }
 
-std::string Driver::Data::GetCSVFormat(Data data)
+std::string Driver::Data::GetCSVFormat(const Data& data)
 {
     std::stringstream ss;
     const auto delim = ',';
@@ -59,7 +59,7 @@ std::string Driver::Data::GetCSVFormat(Data data)
     return ss.str();
 }
 
-Driver::Data Driver::Data::GetData(std::string line)
+Driver::Data Driver::Data::GetData(const std::string& line)
 {
     Data data;
     std::stringstream ss(line);

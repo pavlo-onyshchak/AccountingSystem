@@ -12,8 +12,8 @@ public:
         std::string Name;
         std::string Surname;
         static int GetID(std::string line);
-        static std::string GetCSVFormat(Data data);
-        static Data GetData(std::string line);
+        static std::string GetCSVFormat(const Data& data);
+        static Data GetData(const std::string& line);
     };
 
     struct UserInputData
@@ -29,7 +29,7 @@ public:
     Data Get(int id);
 
 private:
-    int GenerateNextId();
-    Data InitData(const int& id,const UserInputData& userData);
+    int GenerateNextID();
+    Data InitData(const int& id, const UserInputData& userData);
     std::unique_ptr<IDataHandler<Data>> _handler;
 };

@@ -3,34 +3,33 @@
 #include <memory>
 #include "IDataHandler.h"
 
-class GasStation
+class Driver
 {
 public:
     struct Data
     {
         int ID;
-        std::string Location;
-        int Ballance;
+        std::string Name;
+        std::string Surname;
         static int GetID(std::string line);
-        static std::string GetCSVFormat(const Data& userData);
+        static std::string GetCSVFormat(const Data& data);
         static Data GetData(const std::string& line);
     };
 
     struct UserInputData
     {
-        std::string Location;
-        int Ballance;
+        std::string Name;
+        std::string Surname;
     };
 
-	GasStation(std::unique_ptr<IDataHandler<Data>>  handler);
-	void Add(UserInputData userData);
+    Driver(std::unique_ptr<IDataHandler<Data>>  handler);
+    void Add(UserInputData userData);
     int Delete(const int& id);
     int Update(const int& id, const UserInputData& userData);
-    Data Get(const int& id);
+    Data Get(int id);
 
 private:
-    int GenerateNextId();
-    int GetBallance();
+    int GenerateNextID();
     Data InitData(const int& id, const UserInputData& userData);
     std::unique_ptr<IDataHandler<Data>> _handler;
 };

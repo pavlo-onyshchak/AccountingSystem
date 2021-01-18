@@ -29,7 +29,7 @@ Driver::Data Driver::Get(int id)
 
 int Driver::GenerateNextID()
 {
-    return _handler->TableSize() <= 1 ? 1 : _handler->GetLastRecord().ID + 1;
+    return _handler->TableSize() ? _handler->GetLastRecord().ID + 1 : 1;
 }
 
 Driver::Data Driver::InitData(const int& id, const UserInputData& userData)

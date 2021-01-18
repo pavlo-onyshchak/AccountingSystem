@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <experimental/filesystem>
 #include <memory>
+#include <fstream>
 #include "IDataHandler.h"
 
 template <class T>
@@ -62,6 +63,10 @@ inline int CSVHandler<T>::Add(const T data)
 template<class T>
 inline int CSVHandler<T>::Delete(const int id)
 {
+     if (!TableSize())
+     {
+         throw std::exception("File is empty");
+     }
      std::ifstream file(_pathToFile);
      const auto pathToTmpFile = std::string("../GasStationTmp.txt");
      std::ofstream tmpFile(pathToTmpFile, std::ios_base::app);
@@ -86,12 +91,17 @@ inline int CSVHandler<T>::Delete(const int id)
 template<class T>
 inline int CSVHandler<T>::Update(const int id, const T& val)
 {
+    if (!TableSize())
+    {
+        throw std::exception("File is empty");
+    }
     std::ifstream file(_pathToFile);
-    const auto pathToTmpFile = std::string("../GasStationTmp.txt");
+    const auto pathToTmpFile = std::string("../Tmp.txt");
     std::ofstream tmpFile(pathToTmpFile, std::ios_base::app);
     std::string line;
     /*To skeep header line*/
-    std::getline(file, line); 
+    std::getline(file, line);
+    tmpFile << line << "\n";
     while (std::getline(file, line))
     {
         if (id == T::GetID(line))
@@ -102,6 +112,7 @@ inline int CSVHandler<T>::Update(const int id, const T& val)
     }
     file.close();
     remove(_pathToFile.c_str());
+    tmpFile.close();
     rename(pathToTmpFile.c_str(), _pathToFile.c_str());
     return id;
 }
@@ -109,7 +120,7 @@ inline int CSVHandler<T>::Update(const int id, const T& val)
 template<class T>
 inline T CSVHandler<T>::Get(const int id)
 {
-    if (TableSize() <= 1)
+    if (!TableSize())
     {
         throw std::exception("File is empty");
     }
@@ -161,7 +172,7 @@ inline void CSVHandler<T>::InitFile()
 template<class T>
 inline T CSVHandler<T>::GetLastRecord()
 {
-    if(TableSize() <= 1)
+    if(!TableSize())
     {
         throw "File is empty!";
     }
@@ -178,11 +189,13 @@ inline int CSVHandler<T>::TableSize()
 {
     std::ifstream file(_pathToFile);
     std::string line;
-    auto count = 0;
+    /*skip header line*/
+    std::getline(file, line);
+    auto counter = 0;
     while (std::getline(file, line))
     {
-        ++count;
+        ++counter;
     }
     file.close();
-    return count;
+    return counter;
 }

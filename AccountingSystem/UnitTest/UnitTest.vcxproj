@@ -20,8 +20,8 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{297EAC45-485C-48C2-8834-7B9769445D9F}</ProjectGuid>
-    <RootNamespace>AccountingSystem</RootNamespace>
+    <ProjectGuid>{8305593C-8929-4C2E-B459-CDC1B934212D}</ProjectGuid>
+    <RootNamespace>UnitTest</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -70,7 +70,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(IncludePath)</IncludePath>
+    <IncludePath>D:\AccountingSystem\AccountingSystem\AccountingSystem;D:\googletest-master\googletest\include;D:\googletest-master\googletest;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -78,8 +78,6 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\AccountingSystem;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -127,17 +125,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Driver.cpp" />
-    <ClCompile Include="FuelReport.cpp" />
-    <ClCompile Include="GasStation.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ProjectReference Include="..\AccountingSystem\AccountingSystem.vcxproj">
+      <Project>{297eac45-485c-48c2-8834-7b9769445d9f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\GoogleTest\GoogleTest.vcxproj">
+      <Project>{8e3e483f-a876-46a1-a242-c4f00020a6e4}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CSVHandler.h" />
-    <ClInclude Include="Driver.h" />
-    <ClInclude Include="FuelReport.h" />
-    <ClInclude Include="GasStation.h" />
-    <ClInclude Include="IDataHandler.h" />
+    <ClCompile Include="CSVHandlerTests.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

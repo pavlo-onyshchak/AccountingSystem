@@ -31,7 +31,7 @@ FuelReport:: Data FuelReport::Get(const int& id)
 
 int FuelReport::GenerateNextID()
 {
-    return _handler->TableSize() <= 1 ? 1 : _handler->GetLastRecord().ID + 1;
+    return _handler->TableSize() ? _handler->GetLastRecord().ID + 1 : 1;
 }
 
 FuelReport::Data FuelReport::InitData(const int& id, const UserInputData& userData)

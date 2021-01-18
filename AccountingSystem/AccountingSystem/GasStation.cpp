@@ -57,12 +57,12 @@ GasStation::Data GasStation::Data::GetData(const std::string& line)
 
 int GasStation::GenerateNextId()
 {
-    return _handler->TableSize() <= 1 ? 1 : _handler->GetLastRecord().ID + 1;
+    return _handler->TableSize() ? _handler->GetLastRecord().ID + 1 : 1;
 }
 
 int GasStation::GetBallance()
 {
-    return  _handler->TableSize() <=1 ? 0 : _handler->GetLastRecord().Ballance;
+    return  _handler->TableSize() ? _handler->GetLastRecord().Ballance : 0;
 }
 
 GasStation::Data GasStation::InitData(const int& id, const UserInputData& userData)
